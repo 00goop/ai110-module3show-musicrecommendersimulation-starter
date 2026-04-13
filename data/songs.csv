@@ -1,11 +1,21 @@
-id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness
-1,Sunrise City,Neon Echo,pop,happy,0.82,118,0.84,0.79,0.18
-2,Midnight Coding,LoRoom,lofi,chill,0.42,78,0.56,0.62,0.71
-3,Storm Runner,Voltline,rock,intense,0.91,152,0.48,0.66,0.10
-4,Library Rain,Paper Lanterns,lofi,chill,0.35,72,0.60,0.58,0.86
-5,Gym Hero,Max Pulse,pop,intense,0.93,132,0.77,0.88,0.05
-6,Spacewalk Thoughts,Orbit Bloom,ambient,chill,0.28,60,0.65,0.41,0.92
-7,Coffee Shop Stories,Slow Stereo,jazz,relaxed,0.37,90,0.71,0.54,0.89
-8,Night Drive Loop,Neon Echo,synthwave,moody,0.75,110,0.49,0.73,0.22
-9,Focus Flow,LoRoom,lofi,focused,0.40,80,0.59,0.60,0.78
-10,Rooftop Lights,Indigo Parade,indie pop,happy,0.76,124,0.81,0.82,0.35
+title,artist,genre,mood,energy,tempo_bpm
+Sunshine Vibes,DJ Sunny,pop,happy,0.8,120
+Midnight Drive,Luna Wave,r&b,chill,0.4,90
+Electric Pulse,Beat Master,electronic,energetic,0.9,140
+Rainy Thoughts,Mellow Mike,indie,sad,0.3,85
+Bass Drop City,DJ Thunder,electronic,energetic,0.95,150
+Acoustic Morning,Sarah Strings,folk,happy,0.5,100
+Dark Alley,The Shadows,rock,intense,0.85,130
+Ocean Breeze,Coastal Dreams,pop,chill,0.45,95
+Fire Starter,Blaze Band,rock,intense,0.9,145
+Lullaby Lane,Soft Tones,indie,sad,0.2,70
+Neon Nights,Synth City,electronic,happy,0.75,128
+Golden Hour,Amber Light,pop,chill,0.5,105
+Thunderstorm,Heavy Hitters,rock,intense,0.95,155
+Velvet Dreams,Jazz Cat,r&b,chill,0.35,88
+Summer Festival,Party Crew,pop,happy,0.85,125
+Lonely Highway,Desert Wind,country,sad,0.4,92
+Code & Coffee,Lo-Fi Larry,indie,chill,0.3,80
+Gym Hero,Power Track,electronic,energetic,0.95,160
+Campfire Song,Folk Friends,folk,happy,0.55,98
+Deep Focus,Ambient Waves,indie,chill,0.25,75
