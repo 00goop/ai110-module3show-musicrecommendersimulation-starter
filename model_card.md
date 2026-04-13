@@ -1,111 +1,65 @@
-# 🎧 Model Card: Music Recommender Simulation
+# Model Card — VibeFinder 1.0
 
-## 1. Model Name  
+## 1. Model Name
 
-Give your model a short, descriptive name.  
-Example: **VibeFinder 1.0**  
+**VibeFinder 1.0** — a content-based music recommendation simulator.
 
----
+## 2. Goal / Task
 
-## 2. Intended Use  
+VibeFinder takes a user's taste profile (favorite genre, mood, target energy level, and preferred tempo) and recommends the top 5 songs from a catalog that best match those preferences. It simulates how a real streaming service might suggest "what to play next" using song attributes rather than listening history from other users.
 
-Describe what your recommender is designed to do and who it is for. 
+## 3. Data Used
 
-Prompts:  
+The dataset is a hand-curated CSV file containing **20 songs**. Each song has five attributes: `title`, `artist`, `genre`, `mood`, `energy` (0.0–1.0 float), and `tempo_bpm` (integer).
 
-- What kind of recommendations does it generate  
-- What assumptions does it make about the user  
-- Is this for real users or classroom exploration  
+**Limitations of the data:**
+- The catalog is very small — only 20 songs across 7 genres.
+- Genre distribution is uneven: pop (4 songs) and indie (4 songs) are over-represented, while country (1 song) and r&b (2 songs) are under-represented.
+- All song attributes were manually assigned, which introduces subjective bias (e.g., what counts as "chill" vs. "sad" is a judgment call).
 
----
+## 4. Algorithm Summary
 
-## 3. How the Model Works  
+The system scores each song against the user's profile using a weighted point system:
 
-Explain your scoring approach in simple language.  
+1. **Genre match (+2.0 points):** If the song's genre matches the user's favorite genre.
+2. **Mood match (+1.0 point):** If the song's mood matches the user's preferred mood.
+3. **Energy similarity (0.0–1.0 points):** Calculated as `1.0 - |song_energy - target_energy|`. Songs with energy closer to the user's target score higher.
+4. **Tempo bonus (+0.5 points):** Awarded if the song's tempo is within 15 BPM of the user's target.
 
-Prompts:  
+After scoring every song, the system sorts them from highest to lowest score and returns the top 5. The maximum possible score is 4.5.
 
-- What features of each song are used (genre, energy, mood, etc.)  
-- What user preferences are considered  
-- How does the model turn those into a score  
-- What changes did you make from the starter logic  
+## 5. Observed Behavior / Biases
 
-Avoid code here. Pretend you are explaining the idea to a friend who does not program.
+**Genre dominance creates filter bubbles.** Because genre match is worth +2.0 (nearly half the max score), a song in the "right" genre will almost always outrank a song in the "wrong" genre, even if the second song is a better match on mood and energy. For example, the "Sad Acoustic" edge-case profile wanted folk + sad + high energy. The top results were folk songs that didn't match the mood at all — they ranked higher than a country sad song simply because of the +2.0 genre bonus.
 
----
+**Small dataset amplifies the problem.** With only 2 folk songs in the catalog, a folk-loving user gets limited variety regardless of their other preferences.
 
-## 4. Data  
+**Binary matching misses nuance.** Genre and mood are treated as exact matches (match or don't), so "indie" and "folk" get zero similarity credit even though they're musically adjacent.
 
-Describe the dataset the model uses.  
+## 6. Evaluation Process
 
-Prompts:  
+The system was tested with four distinct user profiles:
 
-- How many songs are in the catalog  
-- What genres or moods are represented  
-- Did you add or remove data  
-- Are there parts of musical taste missing in the dataset  
+- **High-Energy Pop** (genre=pop, mood=happy, energy=0.8, tempo=120) — worked as expected, top results were upbeat pop songs.
+- **Chill Lofi** (genre=indie, mood=chill, energy=0.3, tempo=80) — strong results, surfaced lo-fi and ambient tracks.
+- **Deep Intense Rock** (genre=rock, mood=intense, energy=0.9, tempo=145) — all three rock songs appeared in the top 3, which makes sense given the small catalog.
+- **Sad Acoustic / Edge Case** (genre=folk, mood=sad, energy=0.9, tempo=150) — this profile has conflicting preferences (folk songs tend to be low energy, but this user wants 0.9 energy). The system still ranked folk songs first because genre weight (+2.0) overpowers the energy penalty, which revealed the genre-dominance bias clearly.
 
----
+## 7. Intended Use and Non-Intended Use
 
-## 5. Strengths  
+**Intended use:**
+- Educational simulation to understand how content-based recommenders work.
+- Demonstrating the scoring → ranking pipeline in a simple, transparent system.
+- Starting point for experimenting with feature weights and observing how changes affect output.
 
-Where does your system seem to work well  
+**NOT intended for:**
+- Production music streaming — the dataset is far too small and the algorithm too simplistic.
+- Any system where fairness across genres/artists matters — the current weighting creates clear biases.
+- Replacing collaborative or hybrid recommendation systems that use real user behavior data.
 
-Prompts:  
+## 8. Ideas for Improvement
 
-- User types for which it gives reasonable results  
-- Any patterns you think your scoring captures correctly  
-- Cases where the recommendations matched your intuition  
-
----
-
-## 6. Limitations and Bias 
-
-Where the system struggles or behaves unfairly. 
-
-Prompts:  
-
-- Features it does not consider  
-- Genres or moods that are underrepresented  
-- Cases where the system overfits to one preference  
-- Ways the scoring might unintentionally favor some users  
-
----
-
-## 7. Evaluation  
-
-How you checked whether the recommender behaved as expected. 
-
-Prompts:  
-
-- Which user profiles you tested  
-- What you looked for in the recommendations  
-- What surprised you  
-- Any simple tests or comparisons you ran  
-
-No need for numeric metrics unless you created some.
-
----
-
-## 8. Future Work  
-
-Ideas for how you would improve the model next.  
-
-Prompts:  
-
-- Additional features or preferences  
-- Better ways to explain recommendations  
-- Improving diversity among the top results  
-- Handling more complex user tastes  
-
----
-
-## 9. Personal Reflection  
-
-A few sentences about your experience.  
-
-Prompts:  
-
-- What you learned about recommender systems  
-- Something unexpected or interesting you discovered  
-- How this changed the way you think about music recommendation apps  
+1. **Partial genre matching:** Instead of binary match/no-match, use a genre similarity matrix (e.g., indie ↔ folk = 0.7 similarity) so related genres get partial credit.
+2. **Normalize feature weights:** Run experiments to find weights that produce the most diverse top-5 lists rather than hard-coding 2.0/1.0/1.0/0.5.
+3. **Larger, real-world dataset:** Pull song metadata from an API like Spotify's to get hundreds of songs with professionally tagged features (danceability, acousticness, valence).
+4. **User feedback loop:** Let users thumbs-up/down recommendations and adjust weights over time, moving toward a simple hybrid system.
