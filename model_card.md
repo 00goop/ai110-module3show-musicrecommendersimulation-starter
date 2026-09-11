@@ -89,10 +89,10 @@ inputs** covering both happy paths and edge cases:
 
 For each golden, a **separate Gemini judge** (different prompt, lower
 temperature) scores the agent's full trace against pre-declared pass/fail
-criteria. The judge is independent of the recommender persona to reduce
+criteria. The judge uses a separate prompt, but the same model family; this may reduce
 self-grading bias.
 
-**Latest run:** 19/19 criteria passed (100%) — see
+**Historical saved run:** 19/19 model-judged criteria passed — see
 [eval_report.md](eval_report.md). This was achieved after fixing one prompt
 bug discovered during the first eval run (the self-critique step was passing
 only song titles, not (title, artist) pairs, causing false-positive
@@ -167,3 +167,13 @@ evaluation surfaced or that I observed during development:
    binary match/no-match (carried over from VibeFinder 1.0 model card).
 5. **Real catalog** — Spotify API for song metadata (danceability, valence)
    would give the scorer more signal and reduce filter bubble.
+
+## Portfolio verification boundary
+
+Normal CI runs only deterministic scorer and evaluation-accounting tests with no
+API keys. The saved 19/19 result is historical, small-sample and model-judged; it
+has not been rerun in this modernization and is not a general accuracy estimate.
+The evaluator now counts failed agent runs in the planned denominator and rejects
+missing, duplicate or unknown judgment criteria. Confidence is model self-assessment,
+not calibrated probability. Agent stages are a fixed workflow, not autonomous tool
+selection. Live web retrieval and Gemini evaluation remain optional manual runs.

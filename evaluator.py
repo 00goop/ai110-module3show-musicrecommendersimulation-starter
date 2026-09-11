@@ -7,7 +7,8 @@ This is the test harness required by the rubric. For each golden input we:
   3. Aggregate to a final report (printed + written to eval_report.md).
 
 The judge call uses a different prompt and lower temperature than the agent so
-the evaluation is independent of the recommender persona.
+the prompt differs from the recommender persona. The same model judges its own
+family of outputs; this is not independent external validation.
 
 Run with:
     python evaluator.py
@@ -26,6 +27,7 @@ from google import genai
 from google.genai import types
 
 from src.agent import MODEL, MusicAgent
+from src.evaluation import validate_verdict, criterion_total
 
 load_dotenv()
 
@@ -152,7 +154,7 @@ def judge_run(client: genai.Client, query: str, trace: dict, criteria: list[str]
             temperature=0.1,
         ),
     )
-    return json.loads(_strip_code_fence(resp.text))
+    return validate_verdict(json.loads(_strip_code_fence(resp.text)), criteria)
 
 
 # ---------------------------------------------------------------------------
@@ -204,7 +206,7 @@ def main() -> None:
         "",
     ]
     overall_pass = 0
-    overall_total = 0
+    overall_total = criterion_total(GOLDEN)
 
     for i, golden in enumerate(GOLDEN, start=1):
         print(f"[{i}/{len(GOLDEN)}] {golden['name']}: {golden['query']!r}")
@@ -224,11 +226,15 @@ def main() -> None:
             ]
             continue
 
-        verdict = judge_run(judge_client, golden["query"], trace, golden["criteria"])
+        try:
+            verdict = judge_run(judge_client, golden["query"], trace, golden["criteria"])
+        except (ValueError, KeyError, TypeError) as error:
+            report_lines += [f"## {i}. {golden['name']}", "Judge output invalid; all criteria counted as failures.", ""]
+            continue
         passed = sum(1 for r in verdict["results"] if r["verdict"] == "PASS")
         total = len(verdict["results"])
         overall_pass += passed
-        overall_total += total
+        # Denominator includes every planned criterion, including failed runs.
         print(f"    judge: {passed}/{total} criteria passed "
               f"(confidence {trace['critique']['confidence_score']}/10)\n")
 

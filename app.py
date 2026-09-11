@@ -1,7 +1,7 @@
 """MELODY — Streamlit UI for the Agentic RAG music recommender.
 
-Renders each step of the reasoning chain in real time using st.status containers
-so the user can watch the agent think.
+Renders each step of the workflow trace in real time using st.status containers
+so the user can inspect the workflow stages.
 
 Run with:
     streamlit run app.py
@@ -10,6 +10,7 @@ Run with:
 import streamlit as st
 
 from src.agent import MusicAgent
+
 
 
 SAMPLE_QUERIES = [
@@ -30,14 +31,14 @@ st.caption("Agentic RAG music recommender — Gemini 2.5 Flash + content-based s
 with st.sidebar:
     st.header("About")
     st.markdown(
-        "MELODY is an agentic recommender that runs a six-step reasoning chain:\n\n"
+        "MELODY is an agentic recommender that runs a six-step workflow trace:\n\n"
         "1. **Parse** the natural-language query into a UserProfile\n"
         "2. **Score** the catalog with deterministic content-based scoring\n"
         "3. **Retrieve** local artist bios (RAG source #1)\n"
         "4. **Search** the web via Gemini grounding (RAG source #2)\n"
         "5. **Draft** the final recommendation\n"
         "6. **Self-critique** for hallucinations, filter bubbles, conflicts\n\n"
-        "Each step streams to the UI so you can watch the agent think."
+        "Each step streams to the UI so you can inspect the workflow stages."
     )
     st.divider()
     st.subheader("Try a sample query")
@@ -136,4 +137,7 @@ if go and query.strip():
     elif "draft" in final_data:
         st.info(final_data["draft"])
     else:
-        st.warning("Agent did not complete — see the reasoning chain above for the failure point.")
+        st.warning("Agent did not complete — see the workflow trace above for the failure point.")
+
+with st.sidebar:
+    st.caption("Fixed six-stage workflow. Confidence is model self-assessment, not measured accuracy. The catalog is a small coursework dataset.")
