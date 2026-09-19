@@ -131,7 +131,7 @@ confidence to 4/10. A vanilla Gemini chat will happily invent her discography.
 cases) and uses a **separate Gemini judge** (different prompt, low temperature)
 to score each run against pre-declared pass/fail criteria.
 
-**Latest run: 19/19 criteria passed (100%)** — see [eval_report.md](eval_report.md).
+**Historical saved run: 19/19 model-judged criteria passed** — see [eval_report.md](eval_report.md).
 
 Edge cases:
 - **`edge_case_conflict`** — "sad folk songs but with really high energy" — the
@@ -177,7 +177,7 @@ limitations the eval surfaced (filter bubbles, catalog gaps, judge bias).
   terminal and Streamlit (`st.status` containers stream live)
 - [x] **RAG enhancement — multi-source retrieval** — local Markdown +
   Gemini Google Search grounding (cited URLs in UI)
-- [x] **Test harness** — `evaluator.py` runs 5 goldens; independent Gemini
+- [x] **Test harness** — `evaluator.py` runs 5 goldens; separately prompted Gemini
   judge scores each against pre-declared criteria
 - [x] **Fine-tuning / specialization** — strict 5-rule librarian persona,
   measurably different from a generic chatbot (refuses out-of-catalog)
@@ -217,3 +217,13 @@ flowchart TD
     C -->|all scored| E[Rank Songs<br/>Sort by score descending]
     E --> F[Return Top K<br/>Recommendations]
 ```
+
+## Portfolio verification boundary
+
+Normal CI runs only deterministic scorer and evaluation-accounting tests with no
+API keys. The saved 19/19 result is historical, small-sample and model-judged; it
+has not been rerun in this modernization and is not a general accuracy estimate.
+The evaluator now counts failed agent runs in the planned denominator and rejects
+missing, duplicate or unknown judgment criteria. Confidence is model self-assessment,
+not calibrated probability. Agent stages are a fixed workflow, not autonomous tool
+selection. Live web retrieval and Gemini evaluation remain optional manual runs.
